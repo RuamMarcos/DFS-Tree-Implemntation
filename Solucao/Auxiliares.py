@@ -132,4 +132,16 @@ def mostrar_grafo_escolhido(grafo):
     plt.show()
 
 def exibir_menu():
-    pass
+    print("╔═════════════════════════════════════════════════════════════════════╗\n")
+    print("║   1 - Apresentar Grafo (representação gráfica)                      ║\n")
+    print("╠═════════════════════════════════════════════════════════════════════╣\n")
+    print("║   2 - Apresentar Árvore de Busca em Profundidade                    ║\n")
+    print("╠═════════════════════════════════════════════════════════════════════╣\n")
+    print("║   3 - Apresentar Tabela Lowpt(v) e G(v)                             ║\n")
+    print("╠═════════════════════════════════════════════════════════════════════╣\n")
+    print("║   4 - Apresentar Componentes Biconexas e onde estão enraizadas (Tw) ║\n")
+    print("╠═════════════════════════════════════════════════════════════════════╣\n")
+    print("║   5 - Salvar Grafo                                                  ║\n")
+    print("╠═════════════════════════════════════════════════════════════════════╣\n")
+    print("║   6 - Sair                                                          ║\n")
+    print("╚═════════════════════════════════════════════════════════════════════╝")
