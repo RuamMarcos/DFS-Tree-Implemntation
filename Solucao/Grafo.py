@@ -14,8 +14,34 @@ class Grafo:
             for j in range(i+1, num_vertices):  # Evitar duplicatas e laços
                 if matriz_incidencia[i][j] == 1:
                     self.arestas.append([f'v{i+1}', f'v{j+1}'])
+
+    def adjacentes(self, v):
+        vizinhos = set()
+        for a, b in self.arestas:
+            if a == v:
+                vizinhos.add(b)
+            elif b == v:
+                vizinhos.add(a)
+        return list(vizinhos)
     
     def __str__(self):
-        vertices_str = ', '.join(self.vertices)
-        arestas_str = ',\n'.join([f'    {aresta}' for aresta in self.arestas])
-        return f"V = [{vertices_str}]\nE = [\n{arestas_str}\n]"
+        msg = ""
+        msg += (f"{"-"*17}\nVértices do Grafo\n{"-"*17}\n")
+        for vertice in self.vertices:
+            msg += (f"\nVetice {self.vertices.index(vertice)}: {vertice}")
+        msg += ("\n\n")
+
+        msg += (f"{"-"*17}\nArestas do Grafo\n{"-"*17}\n")
+        for aresta in self.arestas:
+            msg += (f"\nAresta {self.arestas.index(aresta)}: {aresta}")
+        msg += ("\n\n")
+
+        return msg
+    
+    def verticesDisponiveis(self):
+        msg = ""
+        msg += (f"{"-"*17}\nVértices do Grafo\n{"-"*17}\n")
+        for vertice in self.vertices:
+            msg += (f"\nVetice {self.vertices.index(vertice)}: {vertice}")
+        msg += ("\n\n")
+        print(msg)
