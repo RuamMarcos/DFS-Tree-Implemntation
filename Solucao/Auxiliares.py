@@ -1,7 +1,11 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 from Grafo import Grafo
+from ArvoreBusca import *
 import os
+import time
+
+
 
 def ler_grafos(arquivo_txt, limite=20):
     grafos = []
@@ -132,6 +136,7 @@ def mostrar_grafo_escolhido(grafo):
     plt.show()
 
 def exibir_menu():
+    os.system("cls")
     print("╔═════════════════════════════════════════════════════════════════════╗\n")
     print("║   1 - Apresentar Grafo (representação gráfica)                      ║\n")
     print("╠═════════════════════════════════════════════════════════════════════╣\n")
@@ -145,3 +150,62 @@ def exibir_menu():
     print("╠═════════════════════════════════════════════════════════════════════╣\n")
     print("║   6 - Sair                                                          ║\n")
     print("╚═════════════════════════════════════════════════════════════════════╝")
+
+def acao_menu(opcao, grafo):
+    match opcao:
+        case 1:
+            os.system("cls")
+            print(grafo)
+            mostrar_grafo_escolhido(grafo)
+            input("Aperte Enter para voltar ao menu. ")
+            os.system("cls")
+            return True
+        
+        case 2:
+            os.system("cls")
+            grafo.verticesDisponiveis()
+
+            raiz = input("Escolha o vertice raiz de busca: ")
+            arvore_busca = busca_em_profundidade(grafo, raiz)
+
+            print("\nÁrvore de busca em profundidade:\n")
+            print(arvore_busca)
+
+            input("Aperte Enter para voltar ao menu. ")
+            os.system("cls")
+            return True
+
+        case 3:
+            pass
+
+        case 4:
+            pass
+
+        case 5:
+            os.system("cls")
+            salvar_grafo_estatico(grafo)
+            print("Imagem salva com: 'grafo_escolhido.png'")
+            time.sleep(2) 
+            os.system("cls")
+            return True
+        
+        case 6:
+            os.system("cls")
+            return False
+        case _:      
+            os.system("cls")
+            print("Opção inválida")
+            time.sleep(2)
+            os.system("cls")
+            return True 
+
+
+def invocar_menu(grafo):
+
+    continarExecutando = True
+
+    while continarExecutando:
+        exibir_menu()
+        print(f"\n {'='*20}\n")
+        escolhaMenu = int(input("Insira a ação que deseja >> "))
+        continarExecutando = acao_menu(escolhaMenu, grafo)
