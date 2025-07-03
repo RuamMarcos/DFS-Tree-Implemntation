@@ -1,8 +1,12 @@
 from Auxiliares import *
 from Grafo import  Grafo
+import os
 
 grafos = ler_grafos("grafo.txt")
 grafo = escolher_grafo(grafos)
 
-salvar_grafo_estatico(grafo)
-mostrar_grafo_escolhido(grafo)
+os.system("cls")
+
+invocar_menu(grafo)
+
+print("\n\n\nEncerrando execução...\n")
