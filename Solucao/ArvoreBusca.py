@@ -49,44 +49,71 @@ def busca_em_profundidade(grafo, raiz):
 
 def plotar_arvore(arvore):
     
-    G = nx.Graph()
-    tree_edges = []
-    back_edges = []
+   import networkx as nx
+    import matplotlib.pyplot as plt
+    from collections import deque, defaultdict
+
+    G = nx.DiGraph()
+    aresta_arvore = []
+    aresta_retorno = []
+
     for a in arvore.arestas:
         G.add_node(a.origem)
         G.add_node(a.destino)
         if a.tipo == "arvore":
-            tree_edges.append((a.origem, a.destino))
-        else:
-            back_edges.append((a.origem, a.destino))
+            aresta_arvore.append((a.origem, a.destino))
+        elif a.tipo == "retorno":
+            aresta_retorno.append((a.origem, a.destino))
 
-    G.add_edges_from(tree_edges + back_edges)
-    pos = nx.spring_layout(G, seed=42)
+    G_tree = nx.DiGraph()
+    G_tree.add_edges_from(aresta_arvore)
 
-    plt.figure(figsize=(8, 6))
-    nx.draw_networkx_nodes(G, pos, node_size=800)
-    nx.draw_networkx_labels(G, pos, font_size=10)
+    levels = {}
+    children = defaultdict(list)
+    for pai, filho in aresta_arvore:
+        children[pai].append(filho)
+    queue = deque([(arvore.raiz, 0)])
+    while queue:
+        node, level = queue.popleft()
+        levels[node] = level
+        for filho in children.get(node, []):
+            queue.append((filho, level + 1))
 
-    # Arestas de árvore (preto, retas)
-    nx.draw_networkx_edges(G, pos, edgelist=tree_edges, width=2)
+    nivel_nos = defaultdict(list)
+    for node, level in levels.items():
+        nivel_nos[level].append(node)
+    max_width = max(len(nos) for nos in nivel_nos.values())
 
-    # Arestas de retorno (vermelho tracejado, curvas)
-    nx.draw_networkx_edges(
-        G,
-        pos,
-        edgelist=back_edges,
-        width=2,
-        style="dashed",
-        edge_color="r",
-        connectionstyle="arc3,rad=0.15",
-        
-    )
+    pos = {}
+    for level, nos in nivel_nos.items():
+        n = len(nos)
+        for i, node in enumerate(sorted(nos)):
+            pos[node] = ((i + 1) / (n + 1), -level)
 
-    plt.title(
-        "Árvore DFS\n(preto = aresta de árvore, vermelho tracejado = aresta de retorno)"
-    )
-    plt.axis("off")
+    plt.figure(figsize=(max(8, 2*max_width), 6))
+
+    nx.draw_networkx_edges(G, pos, edgelist=aresta_arvore, edge_color='black', width=2, arrows=False)
+
+
+    for u, v in aresta_retorno:
+        rad = 0.3
+        if pos[u][1] < pos[v][1]:
+            rad = -rad
+        nx.draw_networkx_edges(
+            G, pos, edgelist=[(u, v)],
+            edge_color='red', width=2, arrows=True,
+            connectionstyle=f'arc3,rad={rad}',
+            arrowstyle='-'
+        )
+
+    nx.draw_networkx_nodes(G, pos, node_color='black', node_size=250)
+    nx.draw_networkx_labels(G, pos, font_color='white', font_weight='bold', font_size=12)
+
+    plt.axis('off')
+    plt.title("Árvore de Busca em Profundidade", fontsize=15, pad=15)
+    plt.tight_layout()
     plt.show()
+
 
 def calcular_lowpt_e_g(arvore_busca):
 
