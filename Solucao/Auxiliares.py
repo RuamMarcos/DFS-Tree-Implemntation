@@ -6,7 +6,6 @@ import os
 import time
 
 
-
 def ler_grafos(arquivo_txt, limite=20):
     grafos = []
     with open(arquivo_txt, 'r') as file:
@@ -62,13 +61,6 @@ def escolher_grafo(grafos):
     return grafo
 
 def salvar_grafo_estatico(grafo):
-    """
-    Gera e salva uma imagem estática do grafo
-    
-    Parâmetros:
-    nos (list): Lista de nós (ex: [10, 9, 8])
-    arestas (list): Lista de arestas (ex: [(10,9), (9,8)])
-    """
     nos = grafo.vertices
     arestas = grafo.arestas
     # Cria o grafo
@@ -78,9 +70,8 @@ def salvar_grafo_estatico(grafo):
     grafo.add_nodes_from(str(no) for no in nos)
     grafo.add_edges_from((str(a), str(b)) for a, b in arestas)
     
-    # Configurações do gráfico
     plt.figure(figsize=(10, 8))
-    pos = nx.spring_layout(grafo)  # Layout organizado
+    pos = nx.spring_layout(grafo)  
     
     # Desenha o grafo
     nx.draw(grafo, pos, with_labels=True, 
@@ -99,10 +90,6 @@ def salvar_grafo_estatico(grafo):
 def mostrar_grafo_escolhido(grafo):
     """
     Exibe o grafo diretamente com visualização interativa
-    
-    Parâmetros:
-    nos (list): Lista de nós (ex: [10, 9, 8])
-    arestas (list): Lista de arestas (ex: [(10,9), (9,8)])
     """
     nos = grafo.vertices
     arestas = grafo.arestas
@@ -132,26 +119,29 @@ def mostrar_grafo_escolhido(grafo):
     plt.title("Grafo Escolhido", fontsize=14, pad=20)
     
     # Exibindo o gráfico
-    plt.tight_layout()
     plt.show()
 
 def exibir_menu():
     os.system("cls")
-    print("╔═════════════════════════════════════════════════════════════════════╗\n")
-    print("║   1 - Apresentar Grafo (representação gráfica)                      ║\n")
-    print("╠═════════════════════════════════════════════════════════════════════╣\n")
-    print("║   2 - Apresentar Árvore de Busca em Profundidade                    ║\n")
-    print("╠═════════════════════════════════════════════════════════════════════╣\n")
-    print("║   3 - Apresentar Tabela Lowpt(v) e G(v)                             ║\n")
-    print("╠═════════════════════════════════════════════════════════════════════╣\n")
-    print("║   4 - Apresentar Componentes Biconexas e onde estão enraizadas (Tw) ║\n")
-    print("╠═════════════════════════════════════════════════════════════════════╣\n")
-    print("║   5 - Salvar Grafo                                                  ║\n")
-    print("╠═════════════════════════════════════════════════════════════════════╣\n")
-    print("║   6 - Sair                                                          ║\n")
+    print("╔═════════════════════════════════════════════════════════════════════╗")
+    print("║   1 - Apresentar Grafo (representação gráfica)                      ║")
+    print("╠═════════════════════════════════════════════════════════════════════╣")
+    print("║   2 - Apresentar Árvore de Busca em Profundidade                    ║")
+    print("╠═════════════════════════════════════════════════════════════════════╣")
+    print("║   3 - Apresentar Tabela Lowpt(v) e G(v)                             ║")
+    print("╠═════════════════════════════════════════════════════════════════════╣")
+    print("║   4 - Listar Articulações com seus Respectivos Demarcadores         ║")
+    print("╠═════════════════════════════════════════════════════════════════════╣")
+    print("║   5 - Apresentar Componentes Biconexas e onde estão enraizadas (Tw) ║")
+    print("╠═════════════════════════════════════════════════════════════════════╣")
+    print("║   6 - Salvar Grafo                                                  ║")
+    print("╠═════════════════════════════════════════════════════════════════════╣")
+    print("║   7 - Sair                                                          ║")
     print("╚═════════════════════════════════════════════════════════════════════╝")
 
 def acao_menu(opcao, grafo):
+    global ultimaArvore 
+
     match opcao:
         case 1:
             os.system("cls")
@@ -166,22 +156,67 @@ def acao_menu(opcao, grafo):
             grafo.verticesDisponiveis()
 
             raiz = input("Escolha o vertice raiz de busca: ")
-            arvore_busca = busca_em_profundidade(grafo, raiz)
+            ultimaArvore = busca_em_profundidade(grafo, raiz)
 
             print("\nÁrvore de busca em profundidade:\n")
-            print(arvore_busca)
+            print(ultimaArvore)
+
+            plotar_arvore(ultimaArvore)
 
             input("Aperte Enter para voltar ao menu. ")
             os.system("cls")
             return True
 
         case 3:
-            pass
+            os.system("cls")
+            if(ultimaArvore == None):
+                print("Você precisa gerar uma árvore de busca primeiro!")
+                time.sleep(3)
+                return True
+            
+            lowpt, g = calcular_lowpt_e_g(ultimaArvore)
+            imprimir_lowpt_e_g(lowpt, g)    
+            plotar_tabelas_lowpt_e_g(lowpt, g)
+            return True
 
-        case 4:
-            pass
+        case 4:  
+            os.system("cls")
+            if(ultimaArvore == None):
+                print("Você precisa gerar uma árvore de busca primeiro!")
+                time.sleep(3)
+                return True
+            
+            print("\n\nArticulações → Demarcadores")
+            dics = demarcadores_por_articulacao(ultimaArvore)
+            for art, dms in dics.items():
+                print(f"{art} → {dms}")
+
+            input("\n\nAperte Enter para voltar ao menu. ")
+            os.system("cls")
+            return True
 
         case 5:
+            os.system("cls")
+            if(ultimaArvore == None):
+                print("Você precisa gerar uma árvore de busca primeiro!")
+                time.sleep(3)
+                return True
+            
+            dem = demarcadores_por_articulacao(ultimaArvore)
+            componentes = componentes_biconexas(grafo, ultimaArvore, dem)
+
+            print("\n== Componentes Biconexas ==\n")
+            for i, comp in enumerate(componentes, 1):
+                print(f"Componente {i}:")
+                print(f"  Articulação: {comp['articulacao']}")
+                print(f"  Demarcador : {comp['raiz']}")
+                print(f"  Vértices   : {sorted(comp['vertices'])}\n")
+
+            input("\n\nAperte Enter para voltar ao menu. ")
+            os.system("cls")
+            return True
+
+        case 6:
             os.system("cls")
             salvar_grafo_estatico(grafo)
             print("Imagem salva com: 'grafo_escolhido.png'")
@@ -189,7 +224,7 @@ def acao_menu(opcao, grafo):
             os.system("cls")
             return True
         
-        case 6:
+        case 7:
             os.system("cls")
             return False
         case _:      
@@ -198,7 +233,6 @@ def acao_menu(opcao, grafo):
             time.sleep(2)
             os.system("cls")
             return True 
-
 
 def invocar_menu(grafo):
 
