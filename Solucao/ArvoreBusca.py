@@ -16,6 +16,8 @@ class ArvoreBusca:
     def __repr__(self):
         info = f"Raiz: {self.raiz}\n"
         return info + "\n".join(str(a) for a in self.arestas)
+
+
   
 class Aresta:
     def __init__(self, origem, destino, tipo):
